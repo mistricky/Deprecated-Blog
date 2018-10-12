@@ -1,0 +1,46 @@
+# 【dart】private 小坑
+
+今天在看`dart`相关，发现`dart`里居然没有`private`/`protected`/`public`等权限修饰符，但是要实现`private`，只需要将需要修饰的字段或者方法，加上`_`前缀即可。
+
+但是这里比较坑的一点是，`_`并不是从`class`级别去限制，而是从`package`级别去限制的。
+
+这里有个简单的`package`，同时还有一个`main`函数
+
+```
+main(){
+    Person person = new Person("Jon");
+    print(person._name); // Jon
+}
+
+class Person{
+    String _name;
+    
+    Person(String name){
+        this._name = name;
+    }
+    
+    String getName(){
+        return this._name;
+    }
+}
+```
+
+按理说这里不应该被访问到，这里只应该由`name`的`getter`来做唯一的访问接口，但是这里却轻而易举的访问到了，这不应该啊！
+
+为了证明文章开头的那个说法，我把`Person`抽到一个单独的文件中
+
+```
+touch person.dart
+```
+
+现在在`main`中进行访问
+
+```
+main(){
+    Person person = new Person("Jon");
+    print(person._name); // [dart] The getter '_name' isn't defined for the class 'Person'.
+}
+```
+
+
+
